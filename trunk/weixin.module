@@ -12,7 +12,7 @@ function weixin_init() {
   /**
    * 加载微信加解密 SDK
    */
-  if (!class_exists('WXBizMsgCrypt')) {
+  if (class_exists('WXBizMsgCrypt')) {
     module_include_file('weixin/WXBizMsgCrypt.php', 'weixin');
   }
 
