@@ -10,6 +10,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
       $request = ''; 
       $errCode = $api->DecryptMsg($g['signature'], $g['timestamp'], $g['nonce'], $data, $request);
 
+      text_log('weixin_data', $data);
       text_log('weixin_data', $request);
 
       if ($errCode == 0) {
