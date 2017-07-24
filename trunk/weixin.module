@@ -95,9 +95,11 @@ function weixin_message_reply($data) {
   $output = ''; //xml格式的密文
   $errCode = $api->EncryptMsg($request, $data['CreateTime'], rand(100000, 88888888), $output);
 
+      text_log('weixin_data', serialize($output));
   if ($errCode == 0) {
     return $output;
   } else {
+      text_log('weixin_data', serialize($errCode));
     dd_log('weixin_error', $errCode);
     return false;
   }
