@@ -8,7 +8,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
       $api = new WXBizMsgCrypt($_weixin->app_token, $_weixin->app_aes_key, $_weixin->app_id);
       $data = file_get_contents('php://input');
       $request = ''; 
-      $errCode = $api->DecryptMsg($g['signature'], $g['timestamp'], $g['nonce'], $data, $request);
+      $errCode = $api->DecryptMsg(!empty($g['msg_signature']) ? $g['msg_signature'] : $g['signature'], $g['timestamp'], $g['nonce'], $data, $request);
 
       text_log('weixin_data', $data);
       text_log('weixin_data', $request);
