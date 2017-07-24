@@ -83,6 +83,8 @@ function weixin_message_filter_default(&$value, &$output) {
  * @return void
  */
 function weixin_message_reply($data) {
+  global $_weixin;
+
   $api = new WXBizMsgCrypt($_weixin->app_token, $_weixin->app_aes_key, $_weixin->app_id);
 
   if (empty($data['CreateTime'])) $data['CreateTime'] = time();
