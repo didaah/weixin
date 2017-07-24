@@ -43,7 +43,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
 
         echo weixin_message_reply(array_merge($values, $output));
       } else {
-        text_log('weixin_data', $errCode);
+        text_log('weixin_data', serialize($errCode));
         dd_log('weixin_error', $errCode);
       }
     break;
