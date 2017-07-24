@@ -27,6 +27,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
         $value = array('message' => $data, 'post' => $v, 'get' => $g);
 
         if (!empty($data['MsgType'])) {
+          dd_log('weixin_api', 'weixin_message_filter' . $data['MsgType']);
           module_alter_all('weixin_message_filter_' . $data['MsgType'], $value, $output);
         }
 
