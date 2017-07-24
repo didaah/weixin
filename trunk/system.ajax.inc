@@ -11,7 +11,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
       $errCode = $api->DecryptMsg(!empty($g['msg_signature']) ? $g['msg_signature'] : $g['signature'], $g['timestamp'], $g['nonce'], $data, $request);
 
       text_log('weixin_data', $data);
-      text_log('weixin_data', $request);
+      text_log('weixin_data', serialize($_GET));
 
       if ($errCode == 0) {
         // 首次接入验证
