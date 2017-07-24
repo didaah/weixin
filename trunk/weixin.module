@@ -139,6 +139,7 @@ function weixin_xml_encode($data, $root='xml', $item='item', $attr='', $id='id',
  * @Implement of hook_weixin_message_filter_event()
  */
 function weixin_weixin_message_filter_event($value, &$output) {
+      text_log('weixin_data', serialize($value));
   switch ($value['message']['Event']) {
     case 'subscribe':
       text_log('weixin_data', serialize($value));
