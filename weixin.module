@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * 实现微信开放平台部分功能
+ */
+
+/**
+ * @Implement of hook_init()
+ */
+function weixin_init() {
+  /**
+   * 加载微信加解密 SDK
+   */
+  module_include_file('weixin/WXBizMsgCrypt.php', 'api');
+}
+
+/**
+ * Implement of hook_menu()
+ */
+function weixin_menu() {
+  $items['admin/weixin/settings'] = array(
+    'title' => '微信设置',
+    'page_callback' => 'dd_get_form',
+    'page_arguments' => array('weixin_admin_settings'),
+    'access_arguments' => array('weixin admin settings'),
+    'file' => 'weixin.admin.inc',
+  );
+  
+  $items['admin/weixin/users'] = array(
+    'title' => '微信用户管理',
+    'page_callback' => 'weixin_admin_users',
+    'access_arguments' => array('weixin admin users'),
+    'file' => 'weixin.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * @Implement of hook_perm()
+ */
+function weixin_perm() {
+  return array(
+    'weixin admin settings' => t('weibo', '微信设置管理'),
+    'weixin admin users' => t('weibo', '微信用户管理'),
+    'weixin user bind' => t('weibo', '绑定微信帐号'),
+    'weixin user login' => t('weibo', '使用微信帐号登录'),
+  );
+}
+
+/**
+ * @Implement of hook_system_admin_menus()
+ * 管理菜单
+ */
+function weixin_system_admin_menus() {
+  return array(array(
+    array(t('weixin', '微信设置'), 'admin/weixin/settings'),
+    array(t('weibo', '微博用户'), 'admin/weixin/users'),
+  ), t('weixin', '微信管理'));
+}
+
+
