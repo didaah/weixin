@@ -9,28 +9,39 @@ function weixin_system_tools_ajax($v, $g, $type) {
       $data = file_get_contents('php://input');
       $request = ''; 
       $errCode = $api->DecryptMsg($g['signature'], $g['timestamp'], $g['nonce'], $data, $request);
-      text_log('weixin', $data);
-      text_log('weixin', serialize($_GET));
+
+      text_log('weixin_data', $request);
+
       if ($errCode == 0) {
         // 首次接入验证
+        //$errCode = $api->VerifyURL($g['msg_signature'], $g['timestamp'], $g['nonce'], $g['echostr'], $output);
+
         if (!empty($g['echostr'])) {
           echo $g['echostr'];
           exit;
         }
 
         $data = (array) simplexml_load_string(str_replace('<![CDATA[]]>', '0', $request), 'SimpleXMLElement', LIBXML_NOCDATA);
-        // 已关联用户
-        if (!empty($data['FromUserName'])) {
-          $ac = db_query('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
-          array('weixin', $data['FromUserName']), array('return' => 'one'));
+
+        $output = array();
+        $value = array('message' => $data, 'post' => $v, 'get' => $g);
+
+        if (!empty($data['MsgType'])) {
+          module_alter_all('weixin_message_filter_' . $data['MsgType'], $value, $output);
         }
 
-        if ($values = _api_wx_spdb_hb_filter_data($data, $ac)) {
-          // 回复消息
-          if ($output = api_wx_reply($values)) {
-            echo $output;
-          }
+        if (empty($output)) {
+          weixin_message_filter_default($value, $output);
         }
+
+        $default = array(
+          'ToUserName' => $data['FromUserName'],
+          'FromUserName' => $data['ToUserName'],
+          'CreateTime' => time(),
+          'MsgType' => 'text',
+        );
+
+        echo weixin_message_reply(array_merge($values, $output));
       } else {
         dd_log('weixin_error', $errCode);
       }
