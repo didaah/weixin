@@ -41,7 +41,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
           'MsgType' => 'text',
         );
 
-        echo weixin_message_reply(array_merge($values, $output));
+        echo weixin_message_reply(array_merge($default, $output));
       } else {
         dd_log('weixin_error', $errCode);
       }
