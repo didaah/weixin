@@ -1,0 +1,9 @@
+<?php
+// $Id$
+
+$info = array(
+  'name' => '微信 API',
+  'description' => '微信 API',
+  'ver' => '1.0',
+  'language' => 'zh-hans',
+);
