@@ -16,9 +16,11 @@ function weixin_init() {
 
   global $_weixin;
 
-  //if ($data = var_get_key('weixin', array())) {
-  //  $_weixin = (object) $data;
- // }
+  $data = array();
+  foreach (array('app_id', 'app_secret', 'app_token', 'app_aes_key') as $key) {
+    $data[$key] = var_get_key('weixin', $key);
+  }
+  $_weixin = (object) $data;
 }
 
 /**
