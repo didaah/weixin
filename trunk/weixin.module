@@ -16,9 +16,9 @@ function weixin_init() {
 
   global $_weixin;
 
-  if ($data = var_get_key('weixin', array())) {
-    $_weixin = (object) $data;
-  }
+  //if ($data = var_get_key('weixin', array())) {
+  //  $_weixin = (object) $data;
+ // }
 }
 
 /**
