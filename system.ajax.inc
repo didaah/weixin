@@ -14,7 +14,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
 
       if ($errCode == 0) {
         // 首次接入验证
-        //$errCode = $api->VerifyURL($g['msg_signature'], $g['timestamp'], $g['nonce'], $g['echostr'], $output);
+        // $errCode = $api->VerifyURL($g['msg_signature'], $g['timestamp'], $g['nonce'], $g['echostr'], $output);
 
         if (!empty($g['echostr'])) {
           echo $g['echostr'];
