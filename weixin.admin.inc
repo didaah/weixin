@@ -88,6 +88,11 @@ function weixin_admin_users() {
           db_exec('UPDATE {user_ext} SET ext_name = ?, data = ? WHERE aid = ?',
           array($ac->name, serialize($weixin), $ac->aid));
 
+          // 名称中含有空格等字符，使用时间戳
+          if (strstr($ac->name, '　') || !preg_match("/^[\w\x80-\xff-]+$/", $ac->name)) {
+            $ac->name = time(); 
+          }
+
           // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
           $i = 0;
           while ($uid = db_query('SELECT uid FROM {users} WHERE name = ?',
