@@ -23,7 +23,7 @@ $next_openid = '';
 for ($i = 0; $i < 10; $i++) {
   $url = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=' . $token;
   if (!empty($next_openid)) {
-    $url . = 'next_openid=' . $next_openid;
+    $url .= 'next_openid=' . $next_openid;
   }
 
   $result = dd_http_request($url, array(), 'GET');
