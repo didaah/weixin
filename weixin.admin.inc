@@ -110,8 +110,6 @@ function weixin_admin_users() {
     l(t('weixin', '微信用户'), 'admin/weixin/users')
   ));
 
-  $output = '<p><a href="">导入用户</a></p>';
-  
   if ($fetch = pager_query('SELECT s.*, u.name FROM {user_ext} s INNER JOIN {users} u 
   ON s.uid = u.uid WHERE s.type = ? ORDER BY u.uid DESC', 50, 0, NULL, array('weixin'))) {
     foreach ($fetch as $o) {

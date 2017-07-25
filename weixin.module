@@ -211,6 +211,10 @@ function weixin_weixin_message_filter_event($value, &$output) {
         array('weixin', $value['message']['FromUserName']), array('return' => 'one'))) {
           $ac = new stdClass;
           
+          // @TODO
+          //  随机用户名，经测试，若调用接口获取用户信息，可能响应变慢，而无法即时回复用户
+          //  用户昵称等信息，通过计划任务定时同步
+          
           $ac->name = 'wx_' . time();
 
           // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
