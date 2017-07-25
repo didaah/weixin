@@ -82,19 +82,24 @@ function weixin_admin_users() {
     array('weixin', $_GET['aid']), array('return' => 'one'))) {
       // 获取用户微信基本信息
       if ($weixin = weixin_get_user_info($ac->ext_type)) {
-        $ac->name = $weixin->nickname;
-        db_exec('UPDATE {user_ext} SET ext_name = ?, data = ? WHERE aid = ?',
-        array($ac->name, serialize($weixin), $ac->aid));
+        if ($ac->name != $weixin->nickname) {
+          $ac->name = $weixin->nickname;
+          db_exec('UPDATE {user_ext} SET ext_name = ?, data = ? WHERE aid = ?',
+          array($ac->name, serialize($weixin), $ac->aid));
 
-        // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
-        $i = 0;
-        while ($uid = db_query('SELECT uid FROM {users} WHERE name = ?',
-        array($ac->name), array('return' => 'column'))) {
-          $ac->name = 'wx_' . $i . '_' . $ac->name;
-          ++$i;
+          // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
+          $i = 0;
+          while ($uid = db_query('SELECT uid FROM {users} WHERE name = ?',
+          array($ac->name), array('return' => 'column'))) {
+            $ac->name = 'wx_' . $i . '_' . $ac->name;
+            ++$i;
+          }
+
+          db_exec('UPDATE {users} SET name = ? WHERE uid = ?',
+          array($ac->name, $ac->uid));
+        } else {
+          dd_set_message($ac->name . ' 昵称一致，不用更新');
         }
-        db_exec('UPDATE {users} SET name = ? WHERE uid = ?',
-        array($ac->name, $ac->uid));
       }
     }
     dd_goto('admin/weixin/users');
