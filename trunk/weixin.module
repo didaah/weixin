@@ -229,7 +229,7 @@ function weixin_weixin_message_filter_event($value, &$output) {
           $ac->pass = dd_range_str(). dd_range_str();
 
           // 生成一个邮箱
-          $ac->mail = $ac->name . '@test.weixin.com';
+          $ac->mail = md5($ac->name) . '@test.weixin.com';
 
           // 扩展信息
           $user_ext = new stdClass();
