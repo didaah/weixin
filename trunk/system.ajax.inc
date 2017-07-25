@@ -4,6 +4,24 @@ function weixin_system_tools_ajax($v, $g, $type) {
   global $_weixin;
 
   switch ($type) {
+    case 'goto':
+      // 登录并跳转
+      global $user;
+
+      // @TODO 同一个设备多个账号切换的问题待处理
+      if (empty($user->uid) && !empty($g['code'])) {
+        if ($ac = weixin_get_uid_by_openid($g['code'])) {
+          $ac = user_login(user_load($ac->uid));
+        }
+      }
+
+      if (!empty($g['redirect'])) {
+        dd_goto(urldecode($g['redirect']));
+      } else {
+        dd_goto('user/center');
+      }
+    break;
+
     case 'default':
       $api = new WXBizMsgCrypt($_weixin->app_token, $_weixin->app_aes_key, $_weixin->app_id);
       $data = file_get_contents('php://input');
