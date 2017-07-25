@@ -82,7 +82,7 @@ function weixin_admin_users() {
     array('weixin', $_GET['aid']), array('return' => 'one'))) {
       // 获取用户微信基本信息
       if ($weixin = weixin_get_user_info($ac->ext_type)) {
-        if ($ac->name != $weixin->nickname) {
+        if ($ac->ext_name != $weixin->nickname) {
           $ac->name = $weixin->nickname;
           db_exec('UPDATE {user_ext} SET ext_name = ?, data = ? WHERE aid = ?',
           array($ac->name, serialize($weixin), $ac->aid));
