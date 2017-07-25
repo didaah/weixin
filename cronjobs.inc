@@ -21,7 +21,7 @@ function weixin_cronjobs($timestamp) {
     'month' => '*',
     'day' => '*',
     'hour' => '*',
-    'minute' => '*', 
+    'minute' => '10', 
   );
 
   return $cronjobs;
