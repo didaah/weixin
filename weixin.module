@@ -3,6 +3,11 @@
 /**
  * @file
  * 实现微信开放平台部分功能
+ * @hook
+ *  hook_weixin_event_default(&$value, &$output) 默认回复
+ *  hook_weixin_event_subscribe(&$value, &$output) 关注成功
+ *  hook_weixin_event_unsubscribe(&$value, &$output) 取消关注
+ *  hook_weixin_message_filter_X(&$value, &$output) 消息推送处理，X 对应 msgType
  */
 
 /**
@@ -70,6 +75,7 @@ function weixin_system_admin_menus() {
 
 function weixin_message_filter_default(&$value, &$output) {
   $output['Content'] = '抱歉，不懂你在说什么。';
+  module_alter_all('weixin_event_default', $value, $output);
 }
 
 // public weixin_message_reply($data) {{{ 
@@ -179,15 +185,19 @@ function weixin_weixin_message_filter_event($value, &$output) {
             } else {
               $output['Content'] = '欢迎关注！';
             }
+            $value['user'] = $user;
           }
         } else {
           // 曾经关注过，已经有用户信息
           $output['Content'] = '欢迎再次回来！';
+          $value['user'] = $ac;
         }
+        module_alter_all('weixin_event_subscribe', $value, $output);
       }
     break;
     case 'unsubscribe':
       // 取消关注
+      module_alter_all('weixin_event_unsubscribe', $value, $output);
     break;
   }
 }
