@@ -62,8 +62,12 @@ for ($i = 0; $i < 10; $i++) {
         } else {
           $ac = new stdClass;
           
-          unset($ac->uid);
           $ac->name = $weixin->nickname;
+
+          // 名称中含有空格等字符，使用时间戳
+          if (strstr($ac->name, '　') || !preg_match("/^[\w\x80-\xff-]+$/", $ac->name)) {
+            $ac->name = time(); 
+          }
 
           // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
           $i = 0;
@@ -84,14 +88,14 @@ for ($i = 0; $i < 10; $i++) {
           $user_ext->ext_id = 1;
           $user_ext->ext_type = $openid; 
           $user_ext->type = 'weixin';
-          $user_ext->ext_name = $ac->name;
+          $user_ext->ext_name = $weixin->nickname;
           $user_ext->timestamp = time();
           $user_ext->data = $weixin;
           
           // 用户创建成功后的状态
           $ac->status = var_get_key('weixin', 'user_status', 1) ? 1 : (var_get_key('user', 'status', 1) == 1 ? 1 : 0);
           $error = '';
-          
+
           if ($user = user_save($ac, NULL, $error)) {
             // 写入微信帐号扩展信息，以绑定到用户
             if (!user_ext_save($user, array($user_ext))) {

@@ -14,6 +14,15 @@ ALTER TABLE `users`
   MODIFY COLUMN `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '昵称' AFTER `uid`,
   MODIFY COLUMN `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '其它数据' AFTER `session`;
 
+ALTER TABLE `files` 
+  DEFAULT CHARACTER SET=utf8mb4,
+  COLLATE=utf8mb4_general_ci,
+  MODIFY COLUMN `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '文件名' AFTER `ext_type`;
+
+ALTER TABLE `logs` 
+  DEFAULT CHARACTER SET=utf8mb4,
+  COLLATE=utf8mb4_general_ci,
+  MODIFY COLUMN `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '事件描述' AFTER `url`;
 
 并在 setting.php 文件中添加 set_names 参数，示例：
 
