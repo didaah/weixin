@@ -80,7 +80,7 @@ function weixin_get_goto_url($redirect, $value = '') {
   $url .= 'appid=' . $_weixin->app_id;
   $url .= '&redirect_uri=' . urlencode(url('ajax', array('absolute' => true, 'query' => array('module' => 'weixin', 'op' => 'goto', 'redirect' => urlencode($redirect)))));
   $url .= '&response_type=code';
-  $url .= '&scope=SCOPE&state=' . ($value ? urlencode($value) : 'STATE');
+  $url .= '&scope=snsapi_base&state=' . ($value ? urlencode($value) : 'STATE');
   $url .= '&connect_redirect=1#wechat_redirect';
 
   return $url;
