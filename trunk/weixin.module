@@ -104,6 +104,33 @@ function weixin_get_access_token() {
 }
 // }}}
 
+// public weixin_get_user_info($openid, $lang) {{{ 
+/**
+ * weixin_get_user_info
+ *  根据微信 openid 获取用户的微信基本信息
+ * 
+ * @param string $openid 
+ * @param string $lang
+ * @access public
+ * @return object
+ */
+function weixin_get_user_info($openid, $lang = 'zh_CN') {
+  global $_weixin;
+
+  if (!$token = weixin_get_access_token()) return false;
+
+  $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $token . '&openid=' . $openid . '&lang=zh_CN';
+  $result = dd_http_request($url, array(), 'GET');
+  if ($data = json_decode($result->data)) {
+    if (!empty($data->openid)) {
+      return $data;
+    }
+  }
+  dd_log('weixin_user', 'openid ' . $openid . ' 信息无法获取');
+  text_log('weixin_error', $result->data);
+}
+// }}}
+
 function weixin_message_filter_default(&$value, &$output) {
   $output['Content'] = '抱歉，不懂你在说什么。';
   module_alter_all('weixin_event_default', $value, $output);
@@ -183,27 +210,34 @@ function weixin_weixin_message_filter_event($value, &$output) {
         if (!$ac = db_query('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
         array('weixin', $value['message']['FromUserName']), array('return' => 'one'))) {
           $ac = new stdClass;
+          
+          $user_ext = new stdClass();
+
+          // 获取用户微信基本信息
+          if (!$weixin = weixin_get_user_info($value['message']['FromUserName'])) {
+            $ac->name = $weixin->nickname;
+          } else {
+            $ac->name = time();
+          }
           // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
-          $ac->name = 'wx_' . time();
           $i = 0;
           while ($uid = db_query('SELECT uid FROM {users} WHERE name = ?',
           array($ac->name), array('return' => 'column'))) {
-            $ac->name = 'wx_' . (time()+$i);
+            $ac->name = 'wx_' . $i . '_' . $ac->name;
             ++$i;
           }
-          
+        
           // 生成随机密码 
           $ac->pass = dd_range_str(). dd_range_str();
 
           // 生成一个邮箱
           $ac->mail = $ac->name . '@test.weixin.com';
 
-          $user_ext = new stdClass();
           // 设为默认帐号
           $user_ext->ext_id = 1;
           $user_ext->ext_type = $value['message']['FromUserName'];
-          $user_ext->ext_name = $ac->name;
           $user_ext->type = 'weixin';
+          $user_ext->ext_name = $ac->name;
           $user_ext->timestamp = time();
           
           // 用户创建成功后的状态
@@ -211,12 +245,35 @@ function weixin_weixin_message_filter_event($value, &$output) {
           $error = '';
           
           if ($user = user_save($ac, NULL, $error)) {
+
+            if (!empty($weixin)) {
+              $user_ext->data = $weixin;
+              $user_ext->ext_name = $weixin->nickname;
+              // 将微信头像写入本地
+              if (!empty($weixin->headimgurl) && $field = field_get_cache_field_key('user', 'field', 'avatar')) {
+                if ($_image = file_get_contents($weixin->headimgurl)) {
+                  file_save_data($_image, array(
+                    'uid' => $user->uid,
+                    'ext_id' => $field->field_id,
+                    'ext_id2' => $user->uid,
+                    'ext_type' => 'field_file',
+                    'filesize' => 4096,
+                    'filename' => $user->uid,
+                    'title' => $user->name . '的头像',
+                    'extension' => 'jpg',
+                    'savepath' => 'avatar',
+                  ), 0);
+                }
+              }
+            }
+
             // 写入微信帐号扩展信息，以绑定到用户
             if (!user_ext_save($user, array($user_ext))) {
               dd_log('weixin_error', '微信帐号 ' . $value['message']['FromUserName'] . ' 绑定失败了'); 
             } else {
               $output['Content'] = '欢迎关注！';
             }
+
             $value['user'] = $user;
           }
         } else {
