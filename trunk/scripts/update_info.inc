@@ -36,7 +36,7 @@ for ($i = 0; $i < 10; $i++) {
         if ($ac = db_exec('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
         array('weixin', $openid), array('return' => 'one'))) {
           if (substr($ac->ext_name, 0, 3) != 'wx_') {
-            message($ac->ext_name . ' 的用户信息已更新过。');
+            message($ac->ext_name  . ' ' . $openid . ' 的用户信息已更新过。');
             continue;
           }
           $is_update = true;
