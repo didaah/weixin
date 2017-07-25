@@ -73,6 +73,37 @@ function weixin_system_admin_menus() {
   ), t('weixin', '微信管理'));
 }
 
+// public weixin_get_access_token() {{{ 
+/**
+ * weixin_get_access_token
+ *  获取 access token
+ * 
+ * @access public
+ * @return string
+ */
+function weixin_get_access_token() {
+  if ($cache = cache_get('weixin_access_token')) {
+    $token = $cache->data;
+  } else {
+    global $_weixin;
+
+    dd_log('weixin_token', '获取 access token');
+
+    $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $_weixin->app_id . '&secret=' . $_weixin->app_secret;
+    $result = dd_http_request($url, array(), 'GET');
+    $data = json_decode($result->data);
+    if (!empty($data->access_token)) {
+      cache_set('weixin_access_token', $data->access_token, 'cache', 7000);
+      $token = $data->access_token;
+    } else {
+      dd_log('weixin_token', $result->data);
+    }
+  }
+
+  return $token;
+}
+// }}}
+
 function weixin_message_filter_default(&$value, &$output) {
   $output['Content'] = '抱歉，不懂你在说什么。';
   module_alter_all('weixin_event_default', $value, $output);
