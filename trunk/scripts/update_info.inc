@@ -48,6 +48,8 @@ for ($i = 0; $i < 10; $i++) {
           continue;
         }
 
+        $weixin->nickname = trim($weixin->nickname);
+
         message($weixin->nickname . '|' . $openid);
 
         // 更新昵称和基本信息
@@ -74,7 +76,7 @@ for ($i = 0; $i < 10; $i++) {
           $ac->pass = dd_range_str(). dd_range_str();
 
           // 生成一个邮箱
-          $ac->mail = $ac->name . '@test.weixin.com';
+          $ac->mail = md5($ac->name) . '@test.weixin.com';
 
           $user_ext = new stdClass();
           // 设为默认帐号
@@ -90,7 +92,6 @@ for ($i = 0; $i < 10; $i++) {
           $error = '';
           
           if ($user = user_save($ac, NULL, $error)) {
-
             // 写入微信帐号扩展信息，以绑定到用户
             if (!user_ext_save($user, array($user_ext))) {
               message($user->name . ' 绑定失败');
