@@ -109,6 +109,8 @@ function weixin_admin_users() {
     l(t('weixin', '微信设置'), 'admin/weixin/settings'),
     l(t('weixin', '微信用户'), 'admin/weixin/users')
   ));
+
+  $output = '<p><a href="">导入用户</a></p>';
   
   if ($fetch = pager_query('SELECT s.*, u.name FROM {user_ext} s INNER JOIN {users} u 
   ON s.uid = u.uid WHERE s.type = ? ORDER BY u.uid DESC', 50, 0, NULL, array('weixin'))) {
@@ -123,7 +125,7 @@ function weixin_admin_users() {
         )),
       );
     }
-    $output = theme('table', array('用户', '微信帐号', '绑定时间', '操作'), $table, array('class' => 'center_table'));
+    $output .= theme('table', array('用户', '微信帐号', '绑定时间', '操作'), $table, array('class' => 'center_table'));
     $output .= pager_view();
   } else {
     $output = system_no_content();
