@@ -126,7 +126,7 @@ function weixin_get_user_info($openid, $lang = 'zh_CN') {
       return $data;
     }
   }
-  dd_log('weixin_user', 'openid ' . $openid . ' 信息无法获取');
+  dd_log('weixin_user', 'openid ' . $openid . ' 已取消关注，无法获取信息');
   text_log('weixin_error', $result->data);
 }
 // }}}
