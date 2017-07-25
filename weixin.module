@@ -73,6 +73,19 @@ function weixin_system_admin_menus() {
   ), t('weixin', '微信管理'));
 }
 
+function weixin_get_goto_url($redirect, $value = '') {
+  global $_weixin;
+
+  $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?';
+  $url .= 'appid=' . $_weixin->app_id;
+  $url .= '&redirect_uri=' . urlencode(url('ajax', array('absolute' => true, 'query' => array('module' => 'weixin', 'op' => 'goto', 'redirect' => urlencode($redirect)))));
+  $url .= '&response_type=code';
+  $url .= '&scope=SCOPE&state=' . ($value ? urlencode($value) : 'STATE');
+  $url .= '&connect_redirect=1#wechat_redirect';
+
+  return $url;
+}
+
 // public weixin_get_access_token() {{{ 
 /**
  * weixin_get_access_token
