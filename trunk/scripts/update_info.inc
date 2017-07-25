@@ -33,7 +33,7 @@ for ($i = 0; $i < 10; $i++) {
       foreach ($data->data->openid as $openid) {
         $is_update = false;
         // 查询该用户是否为系统默认名称，若不是默认名称，则跳过
-        if ($ac = db_exec('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
+        if ($ac = db_query('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
         array('weixin', $openid), array('return' => 'one'))) {
           if (substr($ac->ext_name, 0, 3) != 'wx_') {
             message($ac->ext_name  . ' ' . $openid . ' 的用户信息已更新过。');
