@@ -122,7 +122,7 @@ function weixin_get_user_info($openid, $lang = 'zh_CN') {
   $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $token . '&openid=' . $openid . '&lang=zh_CN';
   $result = dd_http_request($url, array(), 'GET');
   if ($data = json_decode($result->data)) {
-    if (!empty($data->openid)) {
+    if (!empty($data->subscribe)) {
       return $data;
     }
   }
