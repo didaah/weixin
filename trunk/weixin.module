@@ -109,9 +109,36 @@ function weixin_get_goto_url($redirect, $value = '') {
 function weixin_download_media($media_id) {
   if (!$token = weixin_get_access_token()) return false;
   $url = 'http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=' . $token . '&media_id=' . $media_id;
-  $result = dd_http_request($url, array(), 'GET', array('Referer' => $file));
+  $result = dd_http_request($url, array(), 'GET');
   if ($result->code == 200 && !empty($result->data)) {
     return $result;
+  } else {
+    dd_log('weixin_media', $media_id . ' 下载失败');
+  }
+}
+// }}}
+
+// public weixin_create_QR_code($values) {{{ 
+/**
+ * weixin_create_QR_code
+ *  创建一个二维码
+ * 
+ * @param mixed $values 
+ * @access public
+ * @return void
+ */
+function weixin_create_QR_code($values) {
+  if (!$token = weixin_get_access_token()) return false;
+  // 默认为 30 天
+  if (empty($values['expire_seconds'])) $values['expire_seconds'] = 2592000;
+  // 默认为永久字符串
+  if (empty($values['action_name'])) $values['action_name'] = 'QR_LIMIT_STR_SCENE';
+  $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=' . $token;
+  $result = dd_http_request($url, json_encode($values), 'POST');
+  if ($result->code == 200 && !empty($result->data)) {
+    return json_decode($result->data);
+  } else {
+    dd_log('weixin_QR', '二维码创建失败');
   }
 }
 // }}}
