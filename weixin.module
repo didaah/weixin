@@ -73,6 +73,16 @@ function weixin_system_admin_menus() {
   ), t('weixin', '微信管理'));
 }
 
+// public weixin_get_goto_url($redirect, $value = '') {{{ 
+/**
+ * weixin_get_goto_url
+ *  通过 oauth2 获取到用户 openid，在系统内登录并跳转
+ * 
+ * @param mixed $redirect 
+ * @param string $value 
+ * @access public
+ * @return void
+ */
 function weixin_get_goto_url($redirect, $value = '') {
   global $_weixin;
 
@@ -85,6 +95,26 @@ function weixin_get_goto_url($redirect, $value = '') {
 
   return $url;
 }
+// }}}
+
+// public weixin_download_media($media_id) {{{ 
+/**
+ * weixin_download_media
+ *  根据多媒体 id 下载文件
+ * 
+ * @param mixed $media_id 
+ * @access public
+ * @return void
+ */
+function weixin_download_media($media_id) {
+  if (!$token = weixin_get_access_token()) return false;
+  $url = 'http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=' . $token . '&media_id=' . $media_id;
+  $result = dd_http_request($url, array(), 'GET', array('Referer' => $file));
+  if ($result->code == 200 && !empty($result->data)) {
+    return $result;
+  }
+}
+// }}}
 
 // public weixin_get_access_token() {{{ 
 /**
