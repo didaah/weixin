@@ -48,6 +48,8 @@ for ($i = 0; $i < 10; $i++) {
           continue;
         }
 
+        message($weixin->nickname . '|' . $openid);
+
         // 更新昵称和基本信息
         if (!empty($is_update)) {
           db_exec('UPDATE {user_ext} SET ext_name = ?, data = ? WHERE aid = ?',
@@ -114,6 +116,8 @@ for ($i = 0; $i < 10; $i++) {
                 ), 0);
               }
             }
+          } else {
+            dd_log('wexin_user', $weixin->nickname . ' 写入失败');
           }
         }
       }
