@@ -104,6 +104,27 @@ function weixin_get_access_token() {
 }
 // }}}
 
+// public weixin_get_uid_by_openid($openid) {{{ 
+/**
+ * weixin_get_uid_by_openid
+ *  根据微信 id 获取用户本地 uid
+ * 
+ * @param mixed $openid 
+ * @access public
+ * @return void
+ */
+function weixin_get_uid_by_openid($openid) {
+  static $data;
+
+  if (!isset($data[$openid])) {
+    $data[$openid] = db_query('SELECT uid FROM {user_ext} WHERE type = ? AND ext_type = ?',
+    array('weixin', $openid), array('return' => 'column'));
+  }
+
+  return $data[$openid];
+}
+// }}}
+
 // public weixin_get_user_info($openid, $lang) {{{ 
 /**
  * weixin_get_user_info
