@@ -64,7 +64,7 @@ function weixin_perm() {
 function weixin_system_admin_menus() {
   return array(array(
     array(t('weixin', '微信设置'), 'admin/weixin/settings'),
-    array(t('weibo', '微博用户'), 'admin/weixin/users'),
+    array(t('weibo', '微信用户'), 'admin/weixin/users'),
   ), t('weixin', '微信管理'));
 }
 
