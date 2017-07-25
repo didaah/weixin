@@ -254,6 +254,8 @@ function weixin_weixin_message_filter_event($value, &$output) {
         } else {
           // 曾经关注过，已经有用户信息
           $output['Content'] = '欢迎再次回来！';
+          // @TODO 将用户重新激活
+          db_exec('UPDATE {users} SET status = 1 WHERE uid = ?', array($ac->uid));
           $value['user'] = $ac;
         }
         module_alter_all('weixin_event_subscribe', $value, $output);
@@ -261,6 +263,11 @@ function weixin_weixin_message_filter_event($value, &$output) {
     break;
     case 'unsubscribe':
       // 取消关注
+      if ($ac = db_query('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
+      array('weixin', $value['message']['FromUserName']), array('return' => 'one'))) {
+        // @TODO 将用户状态设为禁止
+        db_exec('UPDATE {users} SET status = 0 WHERE uid = ?', array($ac->uid));
+      }
       module_alter_all('weixin_event_unsubscribe', $value, $output);
     break;
   }
