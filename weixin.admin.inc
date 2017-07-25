@@ -73,9 +73,32 @@ function weixin_admin_settings(){
 }
 
 /**
- * 绑定了新浪微信帐号或通过新浪微信帐号注册的用户
+ * 绑定了微信帐号或通过微信帐号注册的用户
  */
 function weixin_admin_users() {
+  // 同步修改昵称
+  if (!empty($_GET['aid']) && $_GET['op'] == 'update') {
+    if ($ac = db_query('SELECT * FROM {user_ext} WHERE type = ? AND aid = ?',
+    array('weixin', $_GET['aid']), array('return' => 'one'))) {
+      // 获取用户微信基本信息
+      if ($weixin = weixin_get_user_info($ac->ext_type)) {
+        $ac->name = $weixin->nickname;
+        db_exec('UPDATE {user_ext} SET ext_name = ?, data = ? WHERE aid = ?',
+        array($ac->name, serialize($weixin), $ac->aid));
+
+        // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
+        $i = 0;
+        while ($uid = db_query('SELECT uid FROM {users} WHERE name = ?',
+        array($ac->name), array('return' => 'column'))) {
+          $ac->name = 'wx_' . $i . '_' . $ac->name;
+          ++$i;
+        }
+        db_exec('UPDATE {users} SET name = ? WHERE uid = ?',
+        array($ac->name, $ac->uid));
+      }
+    }
+    dd_goto('admin/weixin/users');
+  }
    
   dd_set_tabs(array(
     l(t('weixin', '微信设置'), 'admin/weixin/settings'),
@@ -89,10 +112,10 @@ function weixin_admin_users() {
         $o->name,
         $o->ext_name,
         format_date($o->timestamp),
-        //l(t('weixin', '解除绑定'), 'admin/weixin/users', array(
-        //  'query' => 'op=remove&uid='.$o->uid,
-        //  'attributes' => array('class' => 'confirmajax')
-        //)),
+        l(t('weixin', '更新昵称'), 'admin/weixin/users', array(
+          'query' => 'op=update&aid=' . $o->aid,
+          'attributes' => array('class' => 'confirm')
+        )),
       );
     }
     $output = theme('table', array('用户', '微信帐号', '绑定时间', '操作'), $table, array('class' => 'center_table'));
