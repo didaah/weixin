@@ -62,6 +62,7 @@ for ($i = 0; $i < 10; $i++) {
         } else {
           $ac = new stdClass;
           
+          unset($ac->uid);
           $ac->name = $weixin->nickname;
 
           // 检查用户名是否存在，若存在，则增加编号，产生一个新的用户名。
