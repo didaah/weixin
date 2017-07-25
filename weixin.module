@@ -173,6 +173,7 @@ function weixin_weixin_message_filter_event($value, &$output) {
           $user_ext->ext_type = $value['message']['FromUserName'];
           $user_ext->ext_name = $ac->name;
           $user_ext->type = 'weixin';
+          $user_ext->timestamp = time();
           
           // 用户创建成功后的状态
           $ac->status = var_get_key('weixin', 'user_status', 1) ? 1 : (var_get_key('user', 'status', 1) == 1 ? 1 : 0);
