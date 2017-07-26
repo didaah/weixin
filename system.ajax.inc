@@ -10,7 +10,7 @@ function weixin_system_tools_ajax($v, $g, $type) {
 
       // @TODO 同一个设备多个账号切换的问题待处理
       if (empty($user->uid) && !empty($g['code'])) {
-        if ($ac = weixin_get_uid_by_openid($g['code'])) {
+        if ($ac = weixin_get_user_ext_by_openid($g['code'])) {
           $ac = user_login(user_load($ac->uid));
         }
       }
