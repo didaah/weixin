@@ -187,7 +187,7 @@ function weixin_get_user_ext_by_openid($openid) {
   static $data;
 
   if (!isset($data[$openid])) {
-    if (!$data[$openid] = db_query('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
+    if ($data[$openid] = db_query('SELECT * FROM {user_ext} WHERE type = ? AND ext_type = ?',
     array('weixin', $openid), array('return' => 'one'))) {
       if (!empty($data[$openid]->data)) {
         $data[$openid]->data = unserialize($data[$openid]->data);
@@ -198,6 +198,29 @@ function weixin_get_user_ext_by_openid($openid) {
   }
 
   return $data[$openid];
+}
+// }}}
+
+// public weixin_get_user_token_by_code($code) {{{ 
+/**
+ * weixin_get_user_token_by_code
+ *  根据 code 获取用户 token 及 openid
+ * 
+ * @param string $code 
+ * @access public
+ * @return void
+ */
+function weixin_get_user_token_by_code($code) {
+  global $_weixin;
+
+  $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . $_weixin->app_id . '&secret=' . $_weixin->app_secret . '&code=' . $code . '&grant_type=authorization_code';
+  $result = dd_http_request($url, array(), 'GET');
+  if ($result->code == 200 && $data = json_decode($result->data)) {
+    // @TODO 将用户 token 写入数据库
+    return $data;
+  }
+  dd_log('weixin_user', 'openid ' . $code . ' 获取 openid 失败');
+  text_log('weixin_error', $result->data);
 }
 // }}}
 
