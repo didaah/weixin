@@ -208,7 +208,7 @@ function weixin_get_jsapi_ticket() {
     $result = dd_http_request($url, array(), 'GET');
     if ($result->code == 200 && !empty($result->data)) {
       $data = json_decode($result->data);
-      if (!empty($data->access_token)) {
+      if (!empty($data->ticket)) {
         cache_set('weixin_jsapi_ticket', $data->ticket, 'cache', 7000);
         return $data->ticket;
       }
