@@ -107,11 +107,12 @@ function weixin_get_js_sdk_config($config = array(), $url = '') {
   $time = time();
   $str = rand(100000, 999999);
 
+  // @TODO timetamp、nonceStr 必须是 string，否则在 iphone 下可能无法通过验证
   $data = array(
     //'debug' => true,
     'appId' => $_weixin->app_id,
-    'timestamp' => $time, 
-    'nonceStr' => $str,
+    'timestamp' => (string) $time, 
+    'nonceStr' => (string) $str,
     'signature' => $sign,
     'jsApiList' => $api,
   );
@@ -131,7 +132,7 @@ function weixin_get_js_sdk_config($config = array(), $url = '') {
   $data['signature'] = sha1($string);
 
   dd_add_js('wx.config(' .  dd_to_js($data) . ')', 'inline_nojq');
-  dd_add_js('https://res.wx.qq.com/open/js/jweixin-1.2.0.js', 'module');
+  dd_add_js('http://res.wx.qq.com/open/js/jweixin-1.2.0.js', 'module');
 
   return $data;
 }
