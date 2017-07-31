@@ -102,12 +102,9 @@ function weixin_get_js_sdk_config($config = array(), $url = '') {
 
   if (!$ticket = weixin_get_jsapi_ticket()) return false;
 
-  $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $_weixin->app_id . '&secret=' . $_weixin->app_secret;
-
   $api = array('onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone','startRecord','stopRecord','onVoiceRecordEnd','playVoice','pauseVoice','stopVoice','onVoicePlayEnd','uploadVoice','downloadVoice','chooseImage','previewImage','uploadImage','downloadImage','translateVoice','getNetworkType','openLocation','getLocation','hideOptionMenu','showOptionMenu','hideMenuItems','showMenuItems','hideAllNonBaseMenuItem','showAllNonBaseMenuItem','closeWindow','scanQRCode','chooseWXPay','openProductSpecificView','addCard','chooseCard','openCard');
 
-
-  $timestamp = time();
+  $time = time();
   $str = rand(100000, 999999);
 
   $data = array(
@@ -121,8 +118,6 @@ function weixin_get_js_sdk_config($config = array(), $url = '') {
 
   if (!empty($config)) $data = array_merge($data, $config);
   
-  if (!$ticket = weixin_get_jsapi_ticket()) return false;
-
   // 若未指定 url，则使用当前
   if (empty($url)) {
     global $base_url, $base_root;
