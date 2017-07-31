@@ -135,7 +135,7 @@ function weixin_get_js_sdk_config($config = array(), $url = '') {
   $string .= '&url=' . $url;
   $data['signature'] = sha1($string);
 
-  dd_add_js($data, 'inline_nojq');
+  dd_add_js('wx.config(' .  $data . ')', 'inline_nojq');
   dd_add_js('https://res.wx.qq.com/open/js/jweixin-1.2.0.js', 'module');
 
   return $data;
