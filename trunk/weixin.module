@@ -97,6 +97,50 @@ function weixin_get_goto_url($redirect, $value = '') {
 }
 // }}}
 
+function weixin_get_js_sdk_config($config = array(), $url = '') {
+  global $_weixin;
+
+  if (!$ticket = weixin_get_jsapi_ticket()) return false;
+
+  $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $_weixin->app_id . '&secret=' . $_weixin->app_secret;
+
+  $api = array('onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone','startRecord','stopRecord','onVoiceRecordEnd','playVoice','pauseVoice','stopVoice','onVoicePlayEnd','uploadVoice','downloadVoice','chooseImage','previewImage','uploadImage','downloadImage','translateVoice','getNetworkType','openLocation','getLocation','hideOptionMenu','showOptionMenu','hideMenuItems','showMenuItems','hideAllNonBaseMenuItem','showAllNonBaseMenuItem','closeWindow','scanQRCode','chooseWXPay','openProductSpecificView','addCard','chooseCard','openCard');
+
+
+  $timestamp = time();
+  $str = rand(100000, 999999);
+
+  $data = array(
+    //'debug' => true,
+    'appId' => $_weixin->app_id,
+    'timestamp' => $time, 
+    'nonceStr' => $str,
+    'signature' => $sign,
+    'jsApiList' => $api,
+  );
+
+  if (!empty($config)) $data = array_merge($data, $config);
+  
+  if (!$ticket = weixin_get_jsapi_ticket()) return false;
+
+  // 若未指定 url，则使用当前
+  if (empty($url)) {
+    global $base_url, $base_root;
+    $url = $base_root . $_SERVER['REQUEST_URI'];
+  }
+
+  $string = 'jsapi_ticket=' . $ticket;
+  $string .= '&noncestr=' . $data['nonceStr'];
+  $string .= '&timestamp=' . $data['timestamp'];
+  $string .= '&url=' . $url;
+  $data['signature'] = sha1($string);
+
+  dd_add_js($data, 'inline_nojq');
+  dd_add_js('https://res.wx.qq.com/open/js/jweixin-1.2.0.js', 'module');
+
+  return $data;
+}
+
 // public weixin_download_media($media_id) {{{ 
 /**
  * weixin_download_media
@@ -140,6 +184,37 @@ function weixin_create_QR_code($values) {
   } else {
     dd_log('weixin_QR', '二维码创建失败');
   }
+}
+// }}}
+
+// public weixin_get_jsapi_ticket() {{{ 
+/**
+ * weixin_get_jsapi_ticket
+ *  获取 jsapi ticket
+ * 
+ * @access public
+ * @return string 
+ */
+function weixin_get_jsapi_ticket() {
+  if ($cache = cache_get('weixin_jsapi_ticket')) {
+    return $cache->data;
+  } else {
+    if (!$token = weixin_get_access_token()) return false;
+    
+    dd_log('weixin_token', '获取 jsapi ticket');
+
+    $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' . $token . '&type=jsapi';
+
+    $result = dd_http_request($url, array(), 'GET');
+    if ($result->code == 200 && !empty($result->data)) {
+      $data = json_decode($result->data);
+      if (!empty($data->access_token)) {
+        cache_set('weixin_jsapi_ticket', $data->ticket, 'cache', 7000);
+        return $data->ticket;
+      }
+    }
+  }
+  dd_log('weixin_token', 'jsapi ticket 获取失败');
 }
 // }}}
 
